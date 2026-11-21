@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% block title %}Edit Expense{% endblock %}
+{% block page_title %}Edit Expense{% endblock %}
+
+{% block content %}
+<div class="center-panel">
+  <div class="panel" style="max-width:500px;margin:0 auto;">
+    <div class="panel-header"><span>Edit Expense</span></div>
+    <form method="POST" class="expense-form">
+      <div class="form-group">
+        <label>Amount (₹)</label>
+        <input type="number" name="amount" step="0.01" value="{{ exp.amount }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select name="category" required>
+          {% for c in ['Food','Transport','Shopping','Bills','Entertainment','Health','Others'] %}
+          <option value="{{ c }}" {% if exp.category==c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" name="date" value="{{ exp.date }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="description" value="{{ exp.description or '' }}"/>
+      </div>
+      <div class="btn-row">
+        <a href="{{ url_for('expenses') }}" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

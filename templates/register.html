@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Register — SpendWise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">₹</div>
+        <h1>SpendWise</h1>
+      </div>
+      <p class="auth-tagline">Create your account and get started with smart expense tracking instantly.</p>
+      <div class="auth-features">
+        <div class="auth-feature">✦ Auto-loaded sample data</div>
+        <div class="auth-feature">✦ AI-powered insights</div>
+        <div class="auth-feature">✦ Budget management</div>
+        <div class="auth-feature">✦ Export reports (CSV)</div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <h2>Create Account</h2>
+        <p class="auth-sub">Start tracking in seconds</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        {% endfor %}{% endif %}{% endwith %}
+        <form method="POST">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Arjun Sharma" required/>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="you@example.com" required/>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Choose a password" required/>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+        </form>
+        <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

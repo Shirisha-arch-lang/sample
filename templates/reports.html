@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports{% endblock %}
+
+{% block content %}
+<div class="reports-page">
+  <div class="panel">
+    <div class="panel-header">
+      <span>Expense Report</span>
+      <div class="panel-actions">
+        <a href="{{ url_for('export_csv') }}" class="btn btn-sm btn-primary">⬇ Download CSV</a>
+      </div>
+    </div>
+
+    <div class="report-summary">
+      <div class="rstat"><span>Total Records</span><strong>{{ expenses|length }}</strong></div>
+      <div class="rstat"><span>Total Amount</span><strong class="text-danger">₹{{ "%.0f"|format(expenses|sum(attribute='amount')) }}</strong></div>
+      <div class="rstat"><span>Avg per Expense</span>
+        <strong>₹{{ "%.0f"|format(expenses|sum(attribute='amount') / expenses|length) if expenses else 0 }}</strong>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr></thead>
+        <tbody>
+          {% for e in expenses %}
+          <tr>
+            <td class="text-muted">{{ loop.index }}</td>
+            <td>{{ e.date }}</td>
+            <td><span class="cat-badge cat-{{ e.category|lower }}">{{ e.category }}</span></td>
+            <td>{{ e.description or '—' }}</td>
+            <td class="text-right text-danger fw-600">₹{{ "%.0f"|format(e.amount) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="empty-row">No data.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

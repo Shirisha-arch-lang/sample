@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+
+  <!-- SUMMARY CARDS -->
+  <div class="cards-grid">
+    <div class="card card-blue">
+      <div class="card-label">Total Expenses</div>
+      <div class="card-value">₹{{ "%.0f"|format(total) }}</div>
+      <div class="card-sub">All time</div>
+      <div class="card-bg-icon">◈</div>
+    </div>
+    <div class="card card-green">
+      <div class="card-label">This Month</div>
+      <div class="card-value">₹{{ "%.0f"|format(monthly) }}</div>
+      <div class="card-sub">Current spending</div>
+      <div class="card-bg-icon">◉</div>
+    </div>
+    <div class="card card-orange">
+      <div class="card-label">Monthly Budget</div>
+      <div class="card-value">₹{{ "%.0f"|format(budget) }}</div>
+      <div class="card-sub">{{ budget_pct }}% used</div>
+      <div class="card-bg-icon">◎</div>
+    </div>
+    <div class="card card-purple">
+      <div class="card-label">Avg Daily Spend</div>
+      <div class="card-value">₹{{ "%.0f"|format(avg_daily) }}</div>
+      <div class="card-sub">{{ top_cat['category'] if top_cat else 'N/A' }} is top</div>
+      <div class="card-bg-icon">◍</div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- BUDGET RING -->
+    <div class="panel">
+      <div class="panel-header"><span>Budget Status</span></div>
+      <div class="budget-ring-wrap">
+        <div class="budget-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="12"/>
+            <circle cx="60" cy="60" r="50" fill="none"
+              stroke="{{ '#ef4444' if budget_pct > 90 else '#f59e0b' if budget_pct > 70 else '#22c55e' }}"
+              stroke-width="12"
+              stroke-dasharray="{{ (budget_pct / 100 * 314)|round(1) }} 314"
+              stroke-dashoffset="78.5"
+              stroke-linecap="round"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-pct">{{ budget_pct }}%</div>
+            <div class="ring-lab">Used</div>
+          </div>
+        </div>
+        <div class="budget-details">
+          <div class="bdet"><span>Budget</span><strong>₹{{ "%.0f"|format(budget) }}</strong></div>
+          <div class="bdet"><span>Spent</span><strong class="text-danger">₹{{ "%.0f"|format(monthly) }}</strong></div>
+          <div class="bdet"><span>Remaining</span><strong class="text-success">₹{{ "%.0f"|format(remaining) }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="panel">
+      <div class="panel-header"><span>Smart Insights</span><span class="badge badge-ai">AI</span></div>
+      <div class="insights-list">
+        {% for ins in insights %}
+        <div class="insight insight-{{ ins.type }}">
+          <span class="insight-icon">{{ ins.icon }}</span>
+          <span>{{ ins.text|safe }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- RECENT EXPENSES -->
+    <div class="panel panel-wide">
+      <div class="panel-header">
+        <span>Recent Expenses</span>
+        <a href="{{ url_for('expenses') }}" class="panel-link">View all →</a>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr></thead>
+          <tbody>
+            {% for e in recent %}
+            <tr>
+              <td>{{ e.date }}</td>
+              <td><span class="cat-badge cat-{{ e.category|lower }}">{{ e.category }}</span></td>
+              <td>{{ e.description or '—' }}</td>
+              <td class="text-right text-danger">₹{{ "%.0f"|format(e.amount) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="empty-row">No expenses yet. <a href="{{ url_for('expenses') }}">Add one!</a></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SAVINGS GOALS -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>Savings Goals</span>
+        <a href="{{ url_for('budget') }}" class="panel-link">Manage →</a>
+      </div>
+      {% for g in goals %}
+      {% set pct = [[(g.saved_amount / g.target_amount * 100)|round(1), 0]|max, 100]|min %}
+      <div class="goal-item">
+        <div class="goal-top">
+          <span class="goal-title">{{ g.title }}</span>
+          <span class="goal-pct">{{ pct }}%</span>
+        </div>
+        <div class="goal-bar"><div class="goal-fill" style="width:{{ pct }}%"></div></div>
+        <div class="goal-bottom">
+          <span>₹{{ "%.0f"|format(g.saved_amount) }} saved</span>
+          <span>of ₹{{ "%.0f"|format(g.target_amount) }}</span>
+        </div>
+      </div>
+      {% else %}
+      <p class="empty-text">No goals yet. <a href="{{ url_for('budget') }}">Add a goal</a></p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

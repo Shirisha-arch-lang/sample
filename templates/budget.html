@@ -1,0 +1,107 @@
+{% extends 'layout.html' %}
+{% block title %}Budget{% endblock %}
+{% block page_title %}Budget & Savings{% endblock %}
+
+{% block content %}
+<div class="budget-page">
+  <div class="budget-grid">
+
+    <!-- SET BUDGET -->
+    <div class="panel">
+      <div class="panel-header"><span>Monthly Budget</span><span class="badge-period">{{ month }}</span></div>
+      <form method="POST" class="expense-form">
+        <div class="form-group">
+          <label>Budget Amount (₹)</label>
+          <input type="number" name="amount" step="100" min="0" value="{{ budget }}" placeholder="e.g. 20000" required/>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Update Budget</button>
+      </form>
+      <div class="budget-summary">
+        <div class="progress-label">
+          <span>₹{{ "%.0f"|format(monthly) }} spent of ₹{{ "%.0f"|format(budget) }}</span>
+          <span>{{ budget_pct }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill {% if budget_pct > 90 %}fill-danger{% elif budget_pct > 70 %}fill-warn{% else %}fill-safe{% endif %}"
+               style="width:{{ budget_pct }}%"></div>
+        </div>
+        <div class="budget-stats">
+          <div class="bstat"><span>Spent</span><strong class="text-danger">₹{{ "%.0f"|format(monthly) }}</strong></div>
+          <div class="bstat"><span>Remaining</span><strong class="text-success">₹{{ "%.0f"|format(remaining) }}</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY BREAKDOWN -->
+    <div class="panel">
+      <div class="panel-header"><span>Category Spending</span></div>
+      {% for r in cat_rows %}
+      {% set pct = [(r.s / budget * 100)|round(1), 100]|min if budget else 0 %}
+      <div class="cat-budget-item">
+        <div class="cat-budget-top">
+          <span class="cat-badge cat-{{ r.category|lower }}">{{ r.category }}</span>
+          <span class="fw-600">₹{{ "%.0f"|format(r.s) }}</span>
+        </div>
+        <div class="mini-bar"><div class="mini-fill cat-fill-{{ r.category|lower }}" style="width:{{ pct }}%"></div></div>
+      </div>
+      {% else %}
+      <p class="empty-text">No spending this month yet.</p>
+      {% endfor %}
+    </div>
+
+    <!-- SAVINGS GOALS -->
+    <div class="panel panel-wide">
+      <div class="panel-header"><span>Savings Goals</span></div>
+      <div class="goals-container">
+        {% for g in goals %}
+        {% set pct = [[(g.saved_amount / g.target_amount * 100)|round(1), 0]|max, 100]|min %}
+        <div class="goal-card">
+          <div class="goal-card-top">
+            <div>
+              <div class="goal-card-title">{{ g.title }}</div>
+              {% if g.deadline %}<div class="goal-deadline">📅 {{ g.deadline }}</div>{% endif %}
+            </div>
+            <a href="{{ url_for('delete_goal', gid=g.id) }}" class="btn-action btn-del" onclick="return confirm('Delete goal?')">✕</a>
+          </div>
+          <div class="goal-amounts">
+            <span class="goal-saved">₹{{ "%.0f"|format(g.saved_amount) }}</span>
+            <span class="goal-target">/ ₹{{ "%.0f"|format(g.target_amount) }}</span>
+          </div>
+          <div class="goal-bar"><div class="goal-fill" style="width:{{ pct }}%"></div></div>
+          <div class="goal-footer">
+            <span>{{ pct }}% achieved</span>
+            <span>₹{{ "%.0f"|format(g.target_amount - g.saved_amount) }} to go</span>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- ADD GOAL FORM -->
+        <div class="goal-card add-goal-card">
+          <div class="panel-header" style="margin-bottom:1rem"><span>+ New Goal</span></div>
+          <form method="POST" action="{{ url_for('add_goal') }}" class="expense-form">
+            <div class="form-group">
+              <label>Goal Title</label>
+              <input type="text" name="title" placeholder="e.g. New Laptop" required/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Target (₹)</label>
+                <input type="number" name="target" min="0" placeholder="50000" required/>
+              </div>
+              <div class="form-group">
+                <label>Saved so far (₹)</label>
+                <input type="number" name="saved" min="0" placeholder="0"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Deadline</label>
+              <input type="date" name="deadline"/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Add Goal</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

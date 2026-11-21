@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Login — SpendWise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <div class="auth-brand-icon">₹</div>
+        <h1>SpendWise</h1>
+      </div>
+      <p class="auth-tagline">Smart money tracking for modern life. Understand your spending, grow your savings.</p>
+      <div class="auth-stats">
+        <div class="auth-stat"><span class="stat-val">60+</span><span class="stat-lab">Sample Expenses</span></div>
+        <div class="auth-stat"><span class="stat-val">7</span><span class="stat-lab">Categories</span></div>
+        <div class="auth-stat"><span class="stat-val">AI</span><span class="stat-lab">Smart Insights</span></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="auth-sub">Sign in to your account</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        {% endfor %}{% endif %}{% endwith %}
+        <form method="POST">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="you@example.com" required/>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required/>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+        </form>
+        <p class="auth-switch">Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+        <div class="demo-hint">
+          <strong>Demo:</strong> Register to get 60 sample expenses auto-loaded!
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

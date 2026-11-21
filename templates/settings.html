@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block title %}Settings{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="center-panel">
+  <div class="panel" style="max-width:500px;margin:0 auto;">
+    <div class="panel-header"><span>Profile Settings</span></div>
+    <form method="POST" class="expense-form">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" value="{{ user.name }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" value="{{ user.email }}" disabled/>
+        <small class="form-hint">Email cannot be changed</small>
+      </div>
+      <div class="form-group">
+        <label>Member Since</label>
+        <input type="text" value="{{ user.created_at[:10] }}" disabled/>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+    </form>
+    <hr class="divider"/>
+    <div class="danger-zone">
+      <h4>Account</h4>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline btn-danger-outline btn-full">Logout</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
